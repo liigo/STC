@@ -219,14 +219,12 @@ STC_INLINE char* c_strnstrn(const char *s, const char *needle,
          ; i.val < i._end; ++i.val)
 #define c_forloop5(i, itype, start, stop, step) \
     for (struct {itype val, _inc, _end, *ref;} \
-         i = {.val=start, ._inc=step, ._end=(stop) - (0 < i._inc), .ref=&i.val} \
+            i = {.val=start, ._inc=step, ._end=(stop) - (0 < i._inc), .ref=&i.val} \
          ; (i.val > i._end) ^ (i._inc > 0); i.val += i._inc)
 
 #define c_forlist(it, T, ...) \
-    for (struct {T* data; T* ref; size_t index;} \
-         it = {.data=(T[])__VA_ARGS__, .ref=it.data} \
-         ; it.ref != &it.data[c_arraylen(((T[])__VA_ARGS__))] \
-         ; ++it.ref, ++it.index)
+    for (T _i_data[]=__VA_ARGS__, *_i_data_end=_i_data+c_arraylen(_i_data); _i_data_end; _i_data_end=NULL) \
+    for (struct {T* ref; size_t index;} it = {.ref=_i_data}; it.ref < _i_data_end; ++it.ref, ++it.index)
 
 // [deprecated] - replaced by c_forlist():
 #define c_forarray(T, v, ...) \
